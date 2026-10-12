@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vihaan Purohit | Student Developer &amp; Aspiring Software Developer</title>
+<meta name="description" content="Portfolio of Vihaan Purohit, a first-year B.Tech Information Technology student exploring programming, web development, AI, and building useful digital products.">
+<meta name="author" content="Vihaan Purohit">
+<meta name="theme-color" content="#08090d">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: { sans: ["Inter", "sans-serif"] }
+    }
+  }
+};
+</script>
+
+<style>
+:root{--bg:#08090d}
+*{scroll-behavior:smooth}
+html{background:var(--bg)}
+body{margin:0;background:radial-gradient(circle at 80% 10%,rgba(124,58,237,.12),transparent 25rem),radial-gradient(circle at 10% 30%,rgba(37,99,235,.07),transparent 25rem),var(--bg);color:#f4f4f5;font-family:Inter,sans-serif;overflow-x:hidden}
+::selection{background:rgba(139,92,246,.35);color:#fff}
+.grid-bg{background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:50px 50px;mask-image:linear-gradient(to bottom,#000,transparent 85%)}
+.glass{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.09);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.gradient-text{background:linear-gradient(100deg,#fff 15%,#a78bfa 48%,#60a5fa 85%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.glow{box-shadow:0 0 80px rgba(124,58,237,.13),inset 0 0 30px rgba(255,255,255,.015)}
+.primary-btn{position:relative;overflow:hidden;transition:.3s ease}
+.primary-btn::before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 20%,rgba(255,255,255,.22),transparent 80%);transform:translateX(-120%);transition:.6s}
+.primary-btn:hover::before{transform:translateX(120%)}
+.primary-btn:hover{transform:translateY(-2px);box-shadow:0 12px 35px rgba(139,92,246,.25)}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+.float{animation:float 5s ease-in-out infinite}
+@keyframes orb{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.08) rotate(15deg)}}
+.orb{animation:orb 9s ease-in-out infinite}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .8s ease,transform .8s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.project-card{transition:transform .45s cubic-bezier(.2,.8,.2,1),border-color .3s ease,box-shadow .45s ease}
+.project-card:hover{transform:translateY(-8px);border-color:rgba(139,92,246,.35);box-shadow:0 25px 70px rgba(0,0,0,.35)}
+.project-preview{overflow:hidden}
+.project-preview img{transition:transform .7s cubic-bezier(.2,.8,.2,1)}
+.project-card:hover .project-preview img{transform:scale(1.045)}
+.skill-card{transition:.3s ease}
+.skill-card:hover{transform:translateY(-4px);border-color:rgba(139,92,246,.3);background:rgba(139,92,246,.07)}
+.skill-pill{padding:.45rem .7rem;border-radius:.65rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);font-size:.72rem;color:#a1a1aa}
+#navbar{transition:.3s ease}
+#navbar.scrolled{background:rgba(8,9,13,.72);border-color:rgba(255,255,255,.1);box-shadow:0 15px 40px rgba(0,0,0,.2)}
+#cursorGlow{position:fixed;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,.075),transparent 65%);pointer-events:none;transform:translate(-50%,-50%);z-index:0}
+.timeline-line{background:linear-gradient(to bottom,rgba(139,92,246,.8),rgba(59,130,246,.15),transparent)}
+#mobileMenu{max-height:0;opacity:0;overflow:hidden;transition:.35s ease}
+#mobileMenu.open{max-height:400px;opacity:1}
+.code-line{color:#a1a1aa;font-family:monospace;font-size:.8rem;line-height:1.9}
+.code-keyword{color:#c084fc}.code-string{color:#86efac}.code-function{color:#60a5fa}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.reveal{opacity:1;transform:none}#cursorGlow{display:none}}
+</style>
+</head>
+
+<body>
+<!-- =========================================================
+EDITABLE DATA — CHANGE YOUR DETAILS HERE
+========================================================= -->
+<script>
+const portfolio={
+  name:"Vihaan Purohit",
+  role:"Student Developer",
+  email:"",
+  socials:{github:"",linkedin:"",instagram:""},
+  project1:{
+    name:"REDOUT",
+    description:"A fast-paced browser game built around one simple rule: Don't touch red. A hands-on project exploring game logic, user interaction, responsive design, and engaging browser experiences.",
+    image:"https://placehold.co/1200x700/111318/8b5cf6?text=REDOUT",
+    technologies:["HTML","CSS","JavaScript"], github:"", live:"REDOUT_GAME.html"
+  },
+  project2:{
+    name:"Attendly",
+    description:"A practical college attendance tracker for monitoring attendance subject by subject, calculating percentages, tracking attended, missed and cancelled classes, and understanding how many classes can be missed or needed for recovery.",
+    image:"https://placehold.co/1200x700/111318/3b82f6?text=Attendly",
+    technologies:["HTML","CSS","JavaScript"], github:"", live:"Attendly_General.html"
+  }
+};
+</script>
+
+<div id="cursorGlow"></div>
+<div class="grid-bg fixed inset-0 pointer-events-none z-0"></div>
+
+<header id="navbar" class="fixed top-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-6xl z-50 glass rounded-2xl">
+<div class="px-4 sm:px-6 py-3 flex items-center justify-between">
+<a href="#home" class="font-bold tracking-tight text-lg">Vihaan<span class="text-violet-400">.</span></a>
+<nav class="hidden md:flex items-center gap-7 text-sm text-zinc-400">
+<a href="#home" class="hover:text-white transition">Home</a>
+<a href="#about" class="hover:text-white transition">About</a>
+<a href="#projects" class="hover:text-white transition">Projects</a>
+<a href="#skills" class="hover:text-white transition">Skills</a><a href="#journey" class="hover:text-white transition">Journey</a>
+<a href="#contact" class="hover:text-white transition">Contact</a>
+</nav>
+<a href="#contact" class="hidden md:inline-flex primary-btn items-center gap-2 rounded-xl bg-white text-black px-4 py-2 text-sm font-semibold">Let's Connect <i data-lucide="arrow-up-right" class="w-4 h-4"></i></a>
+<button id="menuBtn" aria-label="Open menu" class="md:hidden p-2 rounded-lg hover:bg-white/5"><i data-lucide="menu"></i></button>
+</div>
+<div id="mobileMenu" class="md:hidden px-5">
+<nav class="flex flex-col gap-1 pb-4 text-sm text-zinc-400">
+<a href="#home" class="py-3 hover:text-white">Home</a><a href="#about" class="py-3 hover:text-white">About</a><a href="#projects" class="py-3 hover:text-white">Projects</a><a href="#skills" class="py-3 hover:text-white">Skills</a><a href="#journey" class="py-3 hover:text-white">Journey</a><a href="#contact" class="py-3 hover:text-white">Contact</a>
+<a href="#contact" class="mt-2 text-center rounded-xl bg-white text-black py-3 font-semibold">Let's Connect</a>
+</nav>
+</div>
+</header>
+
+<main class="relative z-10">
+
+<section id="home" class="min-h-screen flex items-center pt-28 pb-16 px-5 sm:px-8">
+<div class="max-w-6xl mx-auto w-full grid lg:grid-cols-2 gap-16 items-center">
+<div class="reveal">
+<div class="inline-flex items-center gap-2 rounded-full glass px-3.5 py-2 text-xs text-zinc-300 mb-7">
+<span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span></span>
+Currently Learning & Building
+</div>
+<p class="text-sm text-violet-400 font-medium mb-4 tracking-wide">HELLO, I'M VIHAAN</p>
+<h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-[-0.045em] leading-[1.03]">Building Ideas.<br><span class="gradient-text">Learning Technology.</span></h1>
+<p class="mt-7 text-lg sm:text-xl text-zinc-400 max-w-xl leading-relaxed">I'm Vihaan Purohit, a first-year B.Tech Information Technology student passionate about <span class="text-zinc-200">programming, web development, AI</span>, and building useful digital products. I enjoy learning by building and turning ideas into real, functional projects.</p>
+<div class="flex flex-wrap gap-3 mt-9">
+<a href="#projects" class="primary-btn inline-flex items-center justify-center gap-2 rounded-xl bg-violet-500 hover:bg-violet-400 px-5 py-3.5 font-semibold text-sm">Explore My Work <i data-lucide="arrow-down-right" class="w-4 h-4"></i></a>
+<a href="#contact" class="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[.04] hover:bg-white/[.08] px-5 py-3.5 font-semibold text-sm transition">Let's Connect <i data-lucide="send" class="w-4 h-4"></i></a>
+</div>
+<div class="flex items-center gap-5 mt-10 text-zinc-500">
+
+<span class="h-4 w-px bg-white/10"></span><span class="text-xs">Currently learning • building • experimenting</span>
+</div>
+</div>
+
+<div class="relative reveal lg:pl-8">
+<div class="orb absolute w-72 h-72 sm:w-96 sm:h-96 rounded-full bg-violet-600/20 blur-[100px] -top-16 right-0"></div>
+<div class="glass glow rounded-3xl p-4 sm:p-5 relative max-w-xl mx-auto">
+<div class="flex items-center justify-between mb-5"><div class="flex gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-400/70"></span><span class="w-2.5 h-2.5 rounded-full bg-yellow-400/70"></span><span class="w-2.5 h-2.5 rounded-full bg-green-400/70"></span></div><span class="text-[10px] text-zinc-600 font-mono">vihaan.dev</span></div>
+<div class="rounded-2xl bg-black/30 border border-white/5 p-5 sm:p-7">
+<div class="code-line"><span class="code-keyword">const</span> developer = {</div>
+<div class="code-line pl-5">name: <span class="code-string">"Vihaan Purohit"</span>,</div>
+<div class="code-line pl-5">education: <span class="code-string">"B.Tech IT"</span>,</div>
+<div class="code-line pl-5">year: <span class="code-function">1</span>,</div>
+<div class="code-line pl-5">interests: [</div>
+<div class="code-line pl-10"><span class="code-string">"Web Development"</span>,</div>
+<div class="code-line pl-10"><span class="code-string">"AI"</span>,</div>
+<div class="code-line pl-10"><span class="code-string">"Software"</span></div>
+<div class="code-line pl-5">]</div><div class="code-line">};</div>
+<div class="mt-6 pt-5 border-t border-white/5 flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-violet-500/10 border border-violet-400/20 flex items-center justify-center"><i data-lucide="sparkles" class="w-4 h-4 text-violet-400"></i></div><div><p class="text-xs font-medium text-zinc-200">Always building something</p><p class="text-[10px] text-zinc-500 mt-1">Learn → Build → Improve</p></div></div>
+</div></div>
+<div class="float absolute -bottom-7 -left-2 sm:-left-8 glass rounded-2xl px-4 py-3 flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-emerald-400/10 flex items-center justify-center"><i data-lucide="code-2" class="w-4 h-4 text-emerald-400"></i></div><div><p class="text-xs text-zinc-500">Status</p><p class="text-sm font-semibold">Building & Learning</p></div></div>
+</div>
+</section>
+
+<section id="about" class="py-28 px-5 sm:px-8">
+<div class="max-w-6xl mx-auto">
+<div class="reveal mb-14"><p class="text-sm text-violet-400 font-medium mb-3">ABOUT ME</p><h2 class="text-4xl sm:text-5xl font-bold tracking-tight">About Me</h2></div>
+<div class="grid lg:grid-cols-[1.1fr_.9fr] gap-8">
+<div class="glass rounded-3xl p-7 sm:p-9 reveal"><div class="w-12 h-12 rounded-2xl bg-violet-500/10 border border-violet-400/10 flex items-center justify-center mb-7"><i data-lucide="user-round" class="w-5 h-5 text-violet-400"></i></div><p class="text-lg sm:text-xl text-zinc-300 leading-relaxed">I'm a first-year B.Tech Information Technology student with a strong interest in software development, web technologies, programming, and artificial intelligence. I enjoy learning by building—taking an idea, understanding the problem behind it, and turning it into something people can actually use.</p><p class="mt-5 text-zinc-500 leading-relaxed">My current technical foundation includes HTML, CSS, Python, C, and C++. I'm focused on strengthening my programming fundamentals while gradually exploring modern web development, AI, and software engineering. I'm still at the beginning of my journey, but I believe consistent learning and building real projects is the best way to grow.</p></div>
+<div class="grid sm:grid-cols-3 lg:grid-cols-1 gap-4">
+<div class="glass rounded-2xl p-6 reveal"><div class="flex items-start gap-4"><div class="w-10 h-10 shrink-0 rounded-xl bg-blue-500/10 flex items-center justify-center"><i data-lucide="graduation-cap" class="w-5 h-5 text-blue-400"></i></div><div><p class="text-xs text-zinc-500 mb-1">Education</p><h3 class="font-semibold">B.Tech Information Technology</h3><p class="text-sm text-zinc-500 mt-1">1st Year</p></div></div></div>
+<div class="glass rounded-2xl p-6 reveal"><div class="flex items-start gap-4"><div class="w-10 h-10 shrink-0 rounded-xl bg-violet-500/10 flex items-center justify-center"><i data-lucide="terminal" class="w-5 h-5 text-violet-400"></i></div><div><p class="text-xs text-zinc-500 mb-1">Focus</p><h3 class="font-semibold">Web Development</h3><p class="text-sm text-zinc-500 mt-1">AI & Software Development</p></div></div></div>
+<div class="glass rounded-2xl p-6 reveal"><div class="flex items-start gap-4"><div class="w-10 h-10 shrink-0 rounded-xl bg-emerald-500/10 flex items-center justify-center"><i data-lucide="rocket" class="w-5 h-5 text-emerald-400"></i></div><div><p class="text-xs text-zinc-500 mb-1">Mindset</p><h3 class="font-semibold">Learn → Build → Improve</h3><p class="text-sm text-zinc-500 mt-1">One project at a time.</p></div></div></div>
+</div></div></div>
+</section>
+
+<section id="projects" class="py-28 px-5 sm:px-8">
+<div class="max-w-6xl mx-auto">
+<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-14 reveal"><div><p class="text-sm text-violet-400 font-medium mb-3">SELECTED WORK</p><h2 class="text-4xl sm:text-5xl font-bold tracking-tight">Things I've Built</h2></div><p class="text-sm text-zinc-500 max-w-sm leading-relaxed">I enjoy turning ideas into practical projects that help me learn, experiment, and solve real problems.</p></div>
+<div class="grid lg:grid-cols-2 gap-7">
+
+<!-- PROJECT 1 — EDIT HERE -->
+<article class="project-card glass rounded-3xl overflow-hidden reveal">
+<div class="project-preview relative aspect-[16/9] bg-zinc-950">
+<img id="project1Image" src="" alt="Project 1 screenshot" class="w-full h-full object-cover opacity-90">
+<div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"></div>
+<div class="absolute top-4 left-4"><span class="glass rounded-full px-3 py-1.5 text-xs text-zinc-300">Project 01</span></div>
+<div class="absolute bottom-4 right-4"><a id="project1Live" href="#" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-white/10 transition" aria-label="View project"><i data-lucide="arrow-up-right" class="w-4 h-4"></i></a></div>
+</div>
+<div class="p-6 sm:p-7"><div class="flex items-start justify-between gap-4"><div><h3 id="project1Name" class="text-2xl font-bold tracking-tight"></h3><p id="project1Description" class="mt-3 text-sm text-zinc-500 leading-relaxed"></p></div><span class="text-4xl font-bold text-white/[.05]">01</span></div><div id="project1Tech" class="flex flex-wrap gap-2 mt-6"></div><div class="flex items-center gap-3 mt-7 pt-5 border-t border-white/5"><a id="project1Github" href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-sm text-zinc-300 hover:text-white transition"><i data-lucide="github" class="w-4 h-4"></i>GitHub</a><span class="w-px h-4 bg-white/10"></span><a id="project1View" href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-sm text-violet-400 hover:text-violet-300 transition">Play REDOUT<i data-lucide="arrow-up-right" class="w-4 h-4"></i></a></div></div>
+</article>
+
+<!-- PROJECT 2 — EDIT HERE -->
+<article class="project-card glass rounded-3xl overflow-hidden reveal">
+<div class="project-preview relative aspect-[16/9] bg-zinc-950">
+<img id="project2Image" src="" alt="Project 2 screenshot" class="w-full h-full object-cover opacity-90">
+<div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"></div>
+<div class="absolute top-4 left-4"><span class="glass rounded-full px-3 py-1.5 text-xs text-zinc-300">Project 02</span></div>
+<div class="absolute bottom-4 right-4"><a id="project2Live" href="#" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-white/10 transition" aria-label="View project"><i data-lucide="arrow-up-right" class="w-4 h-4"></i></a></div>
+</div>
+<div class="p-6 sm:p-7"><div class="flex items-start justify-between gap-4"><div><h3 id="project2Name" class="text-2xl font-bold tracking-tight"></h3><p id="project2Description" class="mt-3 text-sm text-zinc-500 leading-relaxed"></p></div><span class="text-4xl font-bold text-white/[.05]">02</span></div><div id="project2Tech" class="flex flex-wrap gap-2 mt-6"></div><div class="flex items-center gap-3 mt-7 pt-5 border-t border-white/5"><a id="project2Github" href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-sm text-zinc-300 hover:text-white transition"><i data-lucide="github" class="w-4 h-4"></i>GitHub</a><span class="w-px h-4 bg-white/10"></span><a id="project2View" href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-sm text-violet-400 hover:text-violet-300 transition">Try Attendly<i data-lucide="arrow-up-right" class="w-4 h-4"></i></a></div></div>
+</article>
+
+</div></div>
+</section>
+
+<section id="skills" class="py-28 px-5 sm:px-8">
+<div class="max-w-6xl mx-auto">
+<div class="reveal mb-14"><p class="text-sm text-violet-400 font-medium mb-3">TOOLKIT</p><h2 class="text-4xl sm:text-5xl font-bold tracking-tight">Skills & Technologies</h2><p class="mt-4 text-zinc-500 max-w-xl leading-relaxed">Technologies I'm currently learning and building with.</p></div>
+<div class="grid md:grid-cols-3 gap-5">
+<div class="skill-card glass rounded-3xl p-6 reveal"><div class="flex items-center gap-3 mb-6"><div class="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center"><i data-lucide="code-2" class="w-5 h-5 text-violet-400"></i></div><div><p class="font-semibold">HTML</p><p class="text-xs text-zinc-500">Semantic structure & web foundations</p></div></div><span class="skill-pill">Building With</span></div>
+<div class="skill-card glass rounded-3xl p-6 reveal"><div class="flex items-center gap-3 mb-6"><div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center"><i data-lucide="palette" class="w-5 h-5 text-blue-400"></i></div><div><p class="font-semibold">CSS</p><p class="text-xs text-zinc-500">Responsive design & UI styling</p></div></div><span class="skill-pill">Building With</span></div>
+<div class="skill-card glass rounded-3xl p-6 reveal"><div class="flex items-center gap-3 mb-6"><div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center"><i data-lucide="terminal" class="w-5 h-5 text-emerald-400"></i></div><div><p class="font-semibold">Python</p><p class="text-xs text-zinc-500">Programming & problem solving</p></div></div><span class="skill-pill">Learning</span></div>
+<div class="skill-card glass rounded-3xl p-6 reveal"><div class="flex items-center gap-3 mb-6"><div class="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center"><i data-lucide="braces" class="w-5 h-5 text-violet-400"></i></div><div><p class="font-semibold">C</p><p class="text-xs text-zinc-500">Programming fundamentals</p></div></div><span class="skill-pill">Learning</span></div>
+<div class="skill-card glass rounded-3xl p-6 reveal"><div class="flex items-center gap-3 mb-6"><div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center"><i data-lucide="cpu" class="w-5 h-5 text-blue-400"></i></div><div><p class="font-semibold">C++</p><p class="text-xs text-zinc-500">Programming & object-oriented concepts</p></div></div><span class="skill-pill">Learning</span></div>
+</div></div>
+</section>
+
+<section id="journey" class="py-28 px-5 sm:px-8">
+<div class="max-w-6xl mx-auto">
+<div class="reveal mb-14"><p class="text-sm text-violet-400 font-medium mb-3">THE JOURNEY</p><h2 class="text-4xl sm:text-5xl font-bold tracking-tight">I Build to Learn.</h2></div>
+<div class="relative max-w-3xl">
+<div class="timeline-line absolute left-[15px] top-3 bottom-3 w-px"></div>
+<div class="relative pl-12 pb-12 reveal"><div class="absolute left-0 top-1 w-8 h-8 rounded-full bg-violet-500/10 border border-violet-400/30 flex items-center justify-center"><div class="w-2.5 h-2.5 rounded-full bg-violet-400"></div></div><span class="text-xs text-violet-400 font-medium">2026 — B.Tech IT</span><h3 class="text-xl font-semibold mt-2">Started my B.Tech journey</h3><p class="text-sm text-zinc-500 mt-2 leading-relaxed">I want to understand technology by building things, solving problems, making mistakes, and improving with every project.</p></div>
+<div class="relative pl-12 pb-12 reveal"><div class="absolute left-0 top-1 w-8 h-8 rounded-full glass flex items-center justify-center"><i data-lucide="code-2" class="w-4 h-4 text-blue-400"></i></div><span class="text-xs text-blue-400 font-medium">BUILDING & LEARNING</span><h3 class="text-xl font-semibold mt-2">From Ideas to Projects</h3><p class="text-sm text-zinc-500 mt-2 leading-relaxed">Both projects started with a simple idea: learn by building something real. Every project helps me understand technology beyond just theory.</p></div>
+<div class="relative pl-12 reveal"><div class="absolute left-0 top-1 w-8 h-8 rounded-full glass flex items-center justify-center"><i data-lucide="target" class="w-4 h-4 text-emerald-400"></i></div><span class="text-xs text-emerald-400 font-medium">NEXT GOAL</span><h3 class="text-xl font-semibold mt-2">Currently Learning</h3><p class="text-sm text-zinc-500 mt-2 leading-relaxed">Programming Fundamentals • Web Development • Artificial Intelligence • Problem Solving • Software Development</p></div>
+</div></div>
+</section>
+
+<section id="contact" class="py-28 px-5 sm:px-8">
+<div class="max-w-6xl mx-auto">
+<div class="relative overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-violet-500/[.08] via-white/[.025] to-blue-500/[.05] p-7 sm:p-10 lg:p-14">
+<div class="absolute -top-32 -right-32 w-80 h-80 bg-violet-500/10 blur-[100px] rounded-full"></div>
+<div class="grid lg:grid-cols-2 gap-14 relative z-10">
+<div class="reveal"><p class="text-sm text-violet-400 font-medium mb-3">GET IN TOUCH</p><h2 class="text-4xl sm:text-5xl font-bold tracking-tight">Let's Build Something.</h2><p class="text-zinc-400 mt-5 leading-relaxed max-w-md">Have an idea, project, or opportunity worth discussing? I'd love to connect, learn, and explore what we can create together.</p>
+<div class="mt-9 space-y-4">
+</div></div>
+
+<form id="contactForm" class="glass rounded-2xl p-5 sm:p-7 reveal">
+<div class="space-y-5">
+<div><label for="name" class="block text-xs text-zinc-400 mb-2">Name</label><input id="name" name="name" type="text" required autocomplete="name" placeholder="Your name" class="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3.5 text-sm text-white outline-none placeholder:text-zinc-600 focus:border-violet-400/40 transition"></div>
+<div><label for="email" class="block text-xs text-zinc-400 mb-2">Email</label><input id="email" name="email" type="email" required autocomplete="email" placeholder="you@example.com" class="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3.5 text-sm text-white outline-none placeholder:text-zinc-600 focus:border-violet-400/40 transition"></div>
+<div><label for="message" class="block text-xs text-zinc-400 mb-2">Message</label><textarea id="message" name="message" rows="5" required placeholder="Tell me what you're thinking..." class="w-full resize-none rounded-xl border border-white/10 bg-black/20 px-4 py-3.5 text-sm text-white outline-none placeholder:text-zinc-600 focus:border-violet-400/40 transition"></textarea></div>
+<button type="submit" class="primary-btn w-full rounded-xl bg-white text-black py-3.5 font-semibold text-sm flex items-center justify-center gap-2">Send Message <i data-lucide="arrow-up-right" class="w-4 h-4"></i></button>
+<p id="formMessage" class="text-xs text-center text-zinc-500 min-h-4" aria-live="polite"></p>
+</div>
+</form>
+</div></div></div>
+</section>
+</main>
+
+<footer class="border-t border-white/5 px-5 sm:px-8">
+<div class="max-w-6xl mx-auto py-8 flex flex-col sm:flex-row gap-5 items-center justify-between">
+<div><p class="font-semibold">Vihaan<span class="text-violet-400">.</span></p><p class="text-xs text-zinc-600 mt-1">Built with curiosity, code, and a lot of learning.</p></div>
+<div class="flex items-center gap-5">
+<span class="h-4 w-px bg-white/10"></span><span class="text-xs text-zinc-600">© 2026 Vihaan Purohit</span>
+</div></div>
+</footer>
+
+<script>
+function set(id,value){document.getElementById(id).textContent=value}
+function link(id,value){
+  const e=document.getElementById(id);
+  if(!e)return;
+  if(value)e.href=value;else e.style.display="none";
+}
+
+set("project1Name",portfolio.project1.name);set("project1Description",portfolio.project1.description);
+document.getElementById("project1Image").src=portfolio.project1.image;
+["project1Github","project1View","project1Live"].forEach(id=>link(id,id==="project1Github"?portfolio.project1.github:portfolio.project1.live));
+portfolio.project1.technologies.forEach(t=>{const e=document.createElement("span");e.className="skill-pill";e.textContent=t;document.getElementById("project1Tech").appendChild(e)});
+
+set("project2Name",portfolio.project2.name);set("project2Description",portfolio.project2.description);
+document.getElementById("project2Image").src=portfolio.project2.image;
+["project2Github","project2View","project2Live"].forEach(id=>link(id,id==="project2Github"?portfolio.project2.github:portfolio.project2.live));
+portfolio.project2.technologies.forEach(t=>{const e=document.createElement("span");e.className="skill-pill";e.textContent=t;document.getElementById("project2Tech").appendChild(e)});
+
+["heroGithub","githubLink","footerGithub"].forEach(id=>link(id,portfolio.socials.github));
+["heroLinkedin","linkedinLink","footerLinkedin"].forEach(id=>link(id,portfolio.socials.linkedin));
+link("footerInstagram",portfolio.socials.instagram);
+if(portfolio.email){set("emailText",portfolio.email);link("emailLink","mailto:"+portfolio.email);}
+
+lucide.createIcons();
+
+const navbar=document.getElementById("navbar");
+window.addEventListener("scroll",()=>navbar.classList.toggle("scrolled",window.scrollY>25),{passive:true});
+
+const menuBtn=document.getElementById("menuBtn"),mobileMenu=document.getElementById("mobileMenu");
+menuBtn.addEventListener("click",()=>mobileMenu.classList.toggle("open"));
+document.querySelectorAll("#mobileMenu a").forEach(a=>a.addEventListener("click",()=>mobileMenu.classList.remove("open")));
+
+const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add("visible");observer.unobserve(e.target)}}),{threshold:.12});
+document.querySelectorAll(".reveal").forEach(e=>observer.observe(e));
+
+const cursor=document.getElementById("cursorGlow");
+if(window.matchMedia("(pointer:fine)").matches&&!window.matchMedia("(prefers-reduced-motion:reduce)").matches){
+window.addEventListener("mousemove",e=>{cursor.style.left=e.clientX+"px";cursor.style.top=e.clientY+"px"});
+}else cursor.style.display="none";
+
+document.getElementById("contactForm").addEventListener("submit",e=>{
+e.preventDefault();
+const n=document.getElementById("name").value.trim(),em=document.getElementById("email").value.trim(),m=document.getElementById("message").value.trim(),out=document.getElementById("formMessage");
+if(!n||!em||!m){out.textContent="Please fill in all fields.";return}
+const body=encodeURIComponent(`Hello Vihaan!\n\nName: ${n}\nEmail: ${em}\n\nMessage:\n${m}`);
+const whatsappUrl=`https://wa.me/918980069094?text=${body}`;
+window.open(whatsappUrl,"_blank","noopener,noreferrer");
+out.textContent="Opening WhatsApp...";
+});
+
+document.querySelectorAll(".project-preview img").forEach(img=>img.addEventListener("error",()=>{
+img.style.display="none";const p=img.parentElement;p.style.background="linear-gradient(135deg,rgba(139,92,246,.12),rgba(59,130,246,.08))";
+const f=document.createElement("div");f.className="absolute inset-0 flex items-center justify-center";f.innerHTML='<div class="text-center"><div class="w-14 h-14 mx-auto rounded-2xl glass flex items-center justify-center mb-3"><i data-lucide="image" class="w-6 h-6 text-violet-400"></i></div><p class="text-xs text-zinc-500">Add project screenshot</p></div>';p.appendChild(f);lucide.createIcons();
+}));
+</script>
+</body>
+</html>

@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>REDOUT</title>
+    <style>
+        /* ── reset & base ── */
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            background: #050505;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            user-select: none;
+        }
+        canvas#c {
+            position: fixed;
+            inset: 0;
+            display: block;
+        }
+
+        /* ── panels ── */
+        .panel {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(5, 5, 5, 0.88);
+            backdrop-filter: blur(6px);
+            transition: opacity 0.35s ease, transform 0.35s ease;
+            z-index: 10;
+            padding: 20px;
+        }
+        .panel.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.96);
+        }
+
+        /* ── menu ── */
+        #menu h1 {
+            font-size: clamp(48px, 16vw, 96px);
+            letter-spacing: 0.2em;
+            color: #fff;
+            text-shadow: 0 0 10px #ff233d, 0 0 30px #ff233d, 0 0 60px #ff233d;
+            animation: logoFloat 4s ease-in-out infinite;
+            margin: 0 0 4px 0;
+        }
+        #menu p {
+            opacity: 0.6;
+            margin-top: -8px;
+            margin-bottom: 24px;
+            font-size: 1.1rem;
+            letter-spacing: 0.1em;
+        }
+        @keyframes logoFloat {
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* ── buttons ── */
+        button {
+            padding: 14px 22px;
+            margin: 6px;
+            border: 1px solid rgba(255, 35, 61, 0.5);
+            border-radius: 14px;
+            background: rgba(10, 10, 10, 0.7);
+            color: #fff;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            transition: transform 0.18s, box-shadow 0.25s, background 0.2s;
+            min-width: 180px;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 0 14px rgba(255, 35, 61, 0.2);
+        }
+        button:hover {
+            transform: scale(1.04);
+            box-shadow: 0 0 28px rgba(255, 35, 61, 0.6);
+            background: rgba(20, 10, 10, 0.8);
+        }
+        button:active {
+            transform: scale(0.94);
+        }
+        button.small {
+            min-width: 100px;
+            padding: 10px 16px;
+            font-size: 0.85rem;
+        }
+
+        /* ── HUD ── */
+        #hud {
+            position: fixed;
+            top: 14px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            z-index: 5;
+            pointer-events: none;
+            font-size: 1.6rem;
+            font-weight: 700;
+            text-shadow: 0 0 20px #ff233d66;
+            letter-spacing: 0.06em;
+        }
+        #hud.hidden {
+            display: none;
+        }
+
+        /* ── settings / badge row ── */
+        #topRight {
+            position: fixed;
+            right: 14px;
+            top: 14px;
+            z-index: 12;
+            display: flex;
+            gap: 8px;
+        }
+        #topRight button {
+            min-width: 44px;
+            padding: 8px 12px;
+            font-size: 1.2rem;
+            background: rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: none;
+        }
+        #topRight button:hover {
+            background: rgba(30, 30, 30, 0.8);
+            box-shadow: 0 0 16px rgba(255, 35, 61, 0.3);
+        }
+
+        /* ── game over ── */
+        #gameover h1 {
+            font-size: 3.2rem;
+            text-shadow: 0 0 30px #ff233d;
+            margin-bottom: 6px;
+        }
+        #gameover #score {
+            font-size: 1.8rem;
+            margin: 8px 0;
+        }
+        #gameover #best {
+            font-size: 1.2rem;
+            opacity: 0.7;
+            margin-bottom: 20px;
+        }
+
+        /* ── shop / challenges / stats panels ── */
+        .panel h2 {
+            font-size: 2.2rem;
+            letter-spacing: 0.08em;
+            text-shadow: 0 0 20px #ff233d55;
+            margin-bottom: 10px;
+        }
+        .panel .sub {
+            opacity: 0.5;
+            margin-top: -6px;
+            margin-bottom: 18px;
+            font-size: 0.95rem;
+        }
+        .panel .item-grid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            max-height: 50vh;
+            overflow-y: auto;
+            width: 100%;
+            max-width: 420px;
+            padding: 4px 8px;
+        }
+        .panel .item-grid .card {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 12px 18px;
+            width: 100%;
+            backdrop-filter: blur(2px);
+        }
+        .panel .item-grid .card .bar {
+            height: 6px;
+            background: #1a1a1a;
+            border-radius: 6px;
+            margin: 6px 0 4px 0;
+            overflow: hidden;
+        }
+        .panel .item-grid .card .bar .fill {
+            height: 6px;
+            background: #ff233d;
+            border-radius: 6px;
+            transition: width 0.3s;
+        }
+
+        /* ── misc ── */
+        #menuStats {
+            margin-top: 20px;
+            font-size: 0.85rem;
+            opacity: 0.5;
+            text-align: center;
+            line-height: 1.6;
+        }
+        #motivate {
+            margin-top: 6px;
+            font-size: 0.8rem;
+            opacity: 0.3;
+            font-style: italic;
+        }
+        .badge {
+            display: inline-block;
+            background: #ff233d33;
+            border: 1px solid #ff233d66;
+            border-radius: 30px;
+            padding: 2px 14px;
+            font-size: 0.7rem;
+            letter-spacing: 0.06em;
+            margin-left: 8px;
+        }
+
+        /* ── toast ── */
+        #toast {
+            position: fixed;
+            top: -140px;
+            right: 20px;
+            z-index: 99999;
+            background: #0d0d0d;
+            border: 2px solid #ff233d;
+            padding: 16px 24px;
+            border-radius: 16px;
+            box-shadow: 0 0 40px rgba(255, 35, 61, 0.6);
+            transition: top 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            max-width: 300px;
+            pointer-events: none;
+            backdrop-filter: blur(8px);
+        }
+        #toast.show {
+            top: 20px;
+        }
+        #toast b {
+            display: block;
+            font-size: 1.1rem;
+        }
+        #toast small {
+            opacity: 0.7;
+            font-size: 0.85rem;
+        }
+
+        /* ── scroll ── */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ff233d55;
+            border-radius: 8px;
+        }
+
+        /* ─── SPLASH SCREEN ─── */
+        #splash {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #050505;
+            transition: opacity 0.8s ease;
+            pointer-events: none;
+            padding: 20px;
+            /* safe padding for notched phones */
+            padding-top: env(safe-area-inset-top, 20px);
+            padding-bottom: env(safe-area-inset-bottom, 20px);
+        }
+        #splash.fade-out {
+            opacity: 0;
+        }
+
+        /* glow orb – behind everything */
+        #splash .splash-glow {
+            position: absolute;
+            width: 60vw;
+            height: 60vw;
+            max-width: 700px;
+            max-height: 700px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 35, 61, 0.08) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* all splash content sits above the glow */
+        #splash>*:not(.splash-glow) {
+            z-index: 1;
+            position: relative;
+        }
+
+        /* main title — adjusted to fit Android screens */
+        #splash .splash-title {
+            font-size: clamp(38px, 12vw, 76px);
+            font-weight: 900;
+            letter-spacing: 0.25em;
+            color: #fff;
+            text-shadow: 0 0 20px #ff233d, 0 0 60px #ff233d, 0 0 100px #ff233d;
+            margin: 0;
+            line-height: 1.1;
+            animation: splashPulse 2.8s ease-in-out infinite;
+        }
+
+        @keyframes splashPulse {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.92;
+                transform: scale(1.01);
+            }
+        }
+
+        /* subtitle */
+        #splash .splash-sub {
+            font-size: clamp(14px, 3vw, 28px);
+            letter-spacing: 0.4em;
+            opacity: 0.75;
+            margin-top: 4px;
+            font-weight: 300;
+        }
+
+        /* divider */
+        #splash .splash-divider {
+            width: clamp(40px, 10vw, 100px);
+            height: 2px;
+            background: #ff233d;
+            margin: 14px 0 12px 0;
+            box-shadow: 0 0 20px #ff233d66;
+        }
+
+        /* tagline */
+        #splash .splash-tag {
+            font-size: clamp(12px, 2.2vw, 22px);
+            letter-spacing: 0.15em;
+            opacity: 0.5;
+            margin-top: 4px;
+            font-weight: 300;
+        }
+
+        /* death text */
+        #splash .splash-death {
+            font-size: clamp(18px, 3.5vw, 38px);
+            letter-spacing: 0.3em;
+            color: #ff233d;
+            text-shadow: 0 0 30px #ff233d88;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+
+        /* loader bar */
+        #splash .splash-loader {
+            margin-top: 30px;
+            width: clamp(80px, 20vw, 180px);
+            height: 2px;
+            background: #1a1a1a;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+        #splash .splash-loader::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            width: 0%;
+            background: #ff233d;
+            border-radius: 4px;
+            box-shadow: 0 0 20px #ff233d;
+            animation: loadBar 2.6s ease-in-out forwards;
+        }
+        @keyframes loadBar {
+            0% {
+                width: 0%;
+            }
+            100% {
+                width: 100%;
+            }
+        }
+
+        /* ── STUDIO CREDIT – now clearly visible ── */
+        #splash .splash-studio {
+            font-size: clamp(14px, 2.4vw, 24px);
+            letter-spacing: 0.35em;
+            font-weight: 500;
+            color: #ffffff;
+            opacity: 0.92;
+            margin-top: 32px;
+            padding: 6px 24px;
+            border-radius: 40px;
+            background: rgba(255, 35, 61, 0.10);
+            border: 1px solid rgba(255, 35, 61, 0.20);
+            text-shadow: 0 0 30px rgba(255, 35, 61, 0.25);
+            backdrop-filter: blur(4px);
+            transition: opacity 0.3s;
+            font-family: inherit;
+            /* keep consistent with rest */
+        }
+
+        /* small screen tweaks */
+        @media (max-width: 480px) {
+            #splash .splash-studio {
+                margin-top: 24px;
+                padding: 4px 18px;
+                font-size: clamp(12px, 3.2vw, 18px);
+                letter-spacing: 0.3em;
+            }
+            #splash .splash-divider {
+                margin: 10px 0 8px 0;
+            }
+            #splash .splash-loader {
+                margin-top: 22px;
+            }
+            #splash .splash-death {
+                margin-top: 6px;
+            }
+        }
+
+        /* tall screens (e.g. 20:9) – keep content from crowding */
+        @media (min-aspect-ratio: 2/1) {
+            #splash .splash-studio {
+                margin-top: 40px;
+            }
+            #splash .splash-loader {
+                margin-top: 36px;
+            }
+        }
+
+        /* landscape phones – reduce vertical spacing */
+        @media (orientation: landscape) and (max-height: 500px) {
+            #splash .splash-title {
+                font-size: clamp(32px, 12vh, 56px);
+            }
+            #splash .splash-sub {
+                font-size: clamp(10px, 2.5vh, 18px);
+            }
+            #splash .splash-death {
+                font-size: clamp(12px, 3vh, 24px);
+                margin-top: 4px;
+            }
+            #splash .splash-tag {
+                font-size: clamp(10px, 2vh, 16px);
+            }
+            #splash .splash-divider {
+                margin: 6px 0 6px 0;
+                width: clamp(30px, 6vw, 60px);
+            }
+            #splash .splash-loader {
+                margin-top: 14px;
+                height: 2px;
+            }
+            #splash .splash-studio {
+                margin-top: 16px;
+                padding: 2px 14px;
+                font-size: clamp(10px, 2vh, 16px);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ─── SPLASH SCREEN ─── -->
+    <div id="splash">
+        <div class="splash-glow"></div>
+        <div class="splash-title">REDOUT</div>
+        <div class="splash-sub">ONEREDPIXEL</div>
+        <div class="splash-divider"></div>
+        <div class="splash-tag">STAY FOCUSED</div>
+        <div class="splash-death">RED IS DEATH</div>
+        <div class="splash-loader"></div>
+        <!-- studio credit – now prominent -->
+        <div class="splash-studio">VIHN'S STUDIOS</div>
+    </div>
+
+    <!-- ─── CANVAS ─── -->
+    <canvas id="c"></canvas>
+
+    <!-- ─── MENU ─── -->
+    <div id="menu" class="panel">
+        <h1>REDOUT</h1>
+        <p>One red pixel. Game Over.</p>
+        <button onclick="startGame()">▶ PLAY</button>
+        <div id="menuStats"></div>
+        <div id="motivate">Stay focused.</div>
+    </div>
+
+    <!-- ─── HUD ─── -->
+    <div id="hud" class="hidden">
+        <span id="time">0.00</span>
+    </div>
+
+    <!-- ─── TOP RIGHT ─── -->
+    <div id="topRight">
+        <button id="soundBtn" title="Sound">🔊</button>
+        <button id="vibeBtn" title="Vibration">📳</button>
+    </div>
+
+    <!-- ─── GAME OVER ─── -->
+    <div id="gameover" class="panel hidden">
+        <h1>GAME OVER</h1>
+        <div id="score"></div>
+        <div id="best"></div>
+        <button onclick="startGame()">🔄 PLAY AGAIN</button>
+        <button onclick="home()">🏠 HOME</button>
+    </div>
+
+    <!-- ─── SETTINGS ─── -->
+    <div id="settingsPanel" class="panel hidden">
+        <h2>SETTINGS</h2>
+        <p class="sub">Audio &amp; feedback</p>
+        <button onclick="toggleSoundSetting()">🔊 Toggle Sound</button>
+        <button onclick="toggleVibeSetting()">📳 Toggle Vibration</button>
+        <button onclick="resetBestScore()">♻ Reset Best Score</button>
+        <button onclick="closeSettingsPanel()" style="margin-top:12px;">← BACK</button>
+    </div>
+
+    <!-- ─── SHOP ─── -->
+    <div id="shop" class="panel hidden">
+        <h2>SHOP</h2>
+        <p class="sub">Customise your trail</p>
+        <div class="item-grid" id="shopList"></div>
+        <button onclick="closeShop()" style="margin-top:14px;">← BACK</button>
+    </div>
+
+    <!-- ─── ACHIEVEMENTS ─── -->
+    <div id="achievementPanel" class="panel hidden">
+        <h2>🏆 ACHIEVEMENTS</h2>
+        <div class="item-grid" id="achievementList"></div>
+        <button onclick="closeAchievements()" style="margin-top:14px;">← BACK</button>
+    </div>
+
+    <!-- ─── DAILY CHALLENGES ─── -->
+    <div id="challenges" class="panel hidden">
+        <h2>📋 DAILY</h2>
+        <p class="sub">Fresh challenges every day</p>
+        <div class="item-grid" id="challengeList"></div>
+        <button onclick="closeChallenges()" style="margin-top:14px;">← BACK</button>
+    </div>
+
+    <!-- ─── TOAST ─── -->
+    <div id="toast"></div>
+
+    <!-- ════════════════════════════════════════════ -->
+    <!--  JAVASCRIPT  –  one clean block             -->
+    <!-- ════════════════════════════════════════════ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ─── DOM refs ──────────────────────────────────────────────
+            const canvas = document.getElementById('c');
+            const ctx = canvas.getContext('2d');
+            const menu = document.getElementById('menu');
+            const hud = document.getElementById('hud');
+            const gameover = document.getElementById('gameover');
+            const settingsPanel = document.getElementById('settingsPanel');
+            const shop = document.getElementById('shop');
+            const achPanel = document.getElementById('achievementPanel');
+            const challenges = document.getElementById('challenges');
+            const timeEl = document.getElementById('time');
+            const scoreEl = document.getElementById('score');
+            const bestEl = document.getElementById('best');
+            const menuStats = document.getElementById('menuStats');
+            const motivate = document.getElementById('motivate');
+            const soundBtn = document.getElementById('soundBtn');
+            const vibeBtn = document.getElementById('vibeBtn');
+            const toast = document.getElementById('toast');
+            const splash = document.getElementById('splash');
+
+            // ─── splash screen: fade out after 3s ─────────────────────
+            setTimeout(() => {
+                splash.classList.add('fade-out');
+                setTimeout(() => {
+                    splash.style.display = 'none';
+                }, 800);
+            }, 3000);
+
+            // ─── canvas sizing ─────────────────────────────────────────
+            let W, H;
+
+            function resize() {
+                W = canvas.width = window.innerWidth;
+                H = canvas.height = window.innerHeight;
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            // ─── audio / vibe ──────────────────────────────────────────
+            let soundEnabled = localStorage.getItem('redout_sound') !== '0';
+            let vibeEnabled = localStorage.getItem('redout_vibe') !== '0';
+
+            function setSound(v) { soundEnabled = v;
+                localStorage.setItem('redout_sound', v ? '1' : '0');
+                soundBtn.textContent = v ? '🔊' : '🔇'; }
+
+            function setVibe(v) { vibeEnabled = v;
+                localStorage.setItem('redout_vibe', v ? '1' : '0');
+                vibeBtn.textContent = v ? '📳' : '🚫'; }
+
+            setSound(soundEnabled);
+            setVibe(vibeEnabled);
+
+            soundBtn.onclick = () => setSound(!soundEnabled);
+            vibeBtn.onclick = () => setVibe(!vibeEnabled);
+
+            function beep(freq = 440, dur = 0.06, type = 'sine') {
+                if (!soundEnabled) return;
+                try {
+                    const a = new(window.AudioContext || window.webkitAudioContext)();
+                    const o = a.createOscillator();
+                    const g = a.createGain();
+                    o.type = type;
+                    o.frequency.value = freq;
+                    o.connect(g);
+                    g.connect(a.destination);
+                    g.gain.setValueAtTime(0.04, a.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + dur);
+                    o.start(a.currentTime);
+                    o.stop(a.currentTime + dur);
+                } catch (_) { /* ignore */ }
+            }
+
+            function vibrate(ms) {
+                if (vibeEnabled && navigator.vibrate) navigator.vibrate(ms);
+            }
+
+            // ─── toast ──────────────────────────────────────────────────
+            let toastTimer = null;
+
+            function showToast(title, desc) {
+                toast.innerHTML = `<b>${title}</b><small>${desc}</small>`;
+                toast.classList.add('show');
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
+                vibrate(80);
+                beep(880, 0.05);
+            }
+
+            // ─── game state ────────────────────────────────────────────
+            let player, obstacles, trail, particles;
+            let running = false;
+            let gameStartTime = 0;
+            let frameId = null;
+
+            // ─── player defaults ──────────────────────────────────────
+            const PLAYER_SIZE = 10;
+            const OBSTACLE_SPAWN_INTERVAL = 700; // ms
+
+            function resetGameState() {
+                player = {
+                    x: W / 2,
+                    y: H / 2,
+                    dx: 1,
+                    dy: 0,
+                    speed: 4
+                };
+                obstacles = [];
+                trail = [];
+                particles = [];
+            }
+
+            // ─── spawn particles ──────────────────────────────────────
+            function spawnParticles(px, py, count) {
+                for (let i = 0; i < count; i++) {
+                    particles.push({
+                        x: px,
+                        y: py,
+                        vx: (Math.random() - 0.5) * 4,
+                        vy: (Math.random() - 0.5) * 4,
+                        life: 30 + Math.random() * 20
+                    });
+                }
+            }
+
+            // ─── persistent data ──────────────────────────────────────
+            const STORAGE = {
+                get best() { return +localStorage.getItem('redout_best') || 0; },
+                set best(v) { localStorage.setItem('redout_best', String(v)); },
+                get games() { return +localStorage.getItem('redout_games') || 0; },
+                set games(v) { localStorage.setItem('redout_games', String(v)); },
+                get deaths() { return +localStorage.getItem('redout_deaths') || 0; },
+                set deaths(v) { localStorage.setItem('redout_deaths', String(v)); },
+                get totalTime() { return +localStorage.getItem('redout_totalTime') || 0; },
+                set totalTime(v) { localStorage.setItem('redout_totalTime', String(v)); },
+                get turns() { return +localStorage.getItem('redout_turns') || 0; },
+                set turns(v) { localStorage.setItem('redout_turns', String(v)); },
+                get streak() { return +localStorage.getItem('redout_streak') || 0; },
+                set streak(v) { localStorage.setItem('redout_streak', String(v)); },
+                get bestStreak() { return +localStorage.getItem('redout_bestStreak') || 0; },
+                set bestStreak(v) { localStorage.setItem('redout_bestStreak', String(v)); },
+                get trailColor() { return localStorage.getItem('redout_trailColor') || 'white'; },
+                set trailColor(v) { localStorage.setItem('redout_trailColor', v); },
+                get coins() { return +localStorage.getItem('redout_coins') || 0; },
+                set coins(v) { localStorage.setItem('redout_coins', String(v)); },
+            };
+
+            // ─── achievements ──────────────────────────────────────────
+            const ACHIEVEMENTS = [
+                { id: 'first_blood', icon: '🎮', name: 'First Blood', desc: 'Play 1 game', check: () => STORAGE.games >=
+                        1 },
+                { id: 'addicted', icon: '🔥', name: 'Addicted', desc: 'Play 10 games', check: () => STORAGE.games >=
+                        10 },
+                { id: 'marathon', icon: '💯', name: 'Marathon', desc: 'Play 100 games', check: () => STORAGE.games >=
+                        100 },
+                { id: 'steady', icon: '⏱️', name: 'Steady Hands', desc: 'Survive 30s', check: () => STORAGE.best >=
+                        30 },
+                { id: 'untouchable', icon: '⚡', name: 'Untouchable', desc: 'Survive 60s', check: () => STORAGE.best >=
+                        60 },
+                { id: 'elite', icon: '👑', name: 'Elite Survivor', desc: 'Survive 120s', check: () => STORAGE.best >=
+                        120 },
+                { id: 'legendary', icon: '🌌', name: 'Legendary', desc: 'Survive 180s', check: () => STORAGE.best >=
+                        180 },
+                { id: 'turn_master', icon: '🔄', name: 'Turning Master', desc: 'Make 500 turns', check: () => STORAGE
+                        .turns >= 500 },
+                { id: 'survivor', icon: '💀', name: 'Survivor', desc: 'Die 50 times', check: () => STORAGE.deaths >=
+                        50 },
+                { id: 'time_keeper', icon: '🕒', name: 'Time Keeper', desc: 'Survive 1h total', check: () => STORAGE
+                        .totalTime >= 3600 },
+            ];
+
+            let unlocked = JSON.parse(localStorage.getItem('redout_achievements') || '{}');
+            let secrets = JSON.parse(localStorage.getItem('redout_secrets') || '{}');
+
+            function saveAchievements() {
+                localStorage.setItem('redout_achievements', JSON.stringify(unlocked));
+                localStorage.setItem('redout_secrets', JSON.stringify(secrets));
+            }
+
+            function checkAchievements() {
+                let anyNew = false;
+                ACHIEVEMENTS.forEach(a => {
+                    if (!unlocked[a.id] && a.check()) {
+                        unlocked[a.id] = true;
+                        anyNew = true;
+                        showToast(`${a.icon} ${a.name}`, a.desc);
+                    }
+                });
+                // secret: ghost runner
+                if (STORAGE.best >= 90 && !secrets.ghost) {
+                    secrets.ghost = true;
+                    anyNew = true;
+                    showToast('👻 Ghost Runner', 'Survive 90 seconds');
+                }
+                // secret: redout legend
+                if (STORAGE.best >= 300 && !secrets.legend) {
+                    secrets.legend = true;
+                    anyNew = true;
+                    showToast('🔥 REDOUT Legend', 'Survive 300 seconds');
+                }
+                if (anyNew) saveAchievements();
+                renderAchievements();
+            }
+
+            // ─── daily challenges ──────────────────────────────────────
+            const DAILY_KEY = 'redout_daily';
+
+            function todayKey() { return new Date().toDateString(); }
+
+            function getDefaultDaily() {
+                return {
+                    day: todayKey(),
+                    items: [
+                        { id: 'd1', label: 'Play 20 games', goal: 20, progress: 0 },
+                        { id: 'd2', label: 'Survive 90s in one run', goal: 90, progress: 0 },
+                        { id: 'd3', label: 'Make 200 turns', goal: 200, progress: 0 },
+                        { id: 'd4', label: 'Survive 600s total', goal: 600, progress: 0 },
+                    ]
+                };
+            }
+
+            function loadDaily() {
+                let raw = localStorage.getItem(DAILY_KEY);
+                if (raw) {
+                    try {
+                        let d = JSON.parse(raw);
+                        if (d.day === todayKey()) return d;
+                    } catch (_) { /* ignore */ }
+                }
+                return getDefaultDaily();
+            }
+
+            function saveDaily(d) {
+                localStorage.setItem(DAILY_KEY, JSON.stringify(d));
+            }
+
+            let daily = loadDaily();
+
+            function updateDailyProgress(updates) {
+                let changed = false;
+                daily.items.forEach(item => {
+                    if (updates[item.id] !== undefined) {
+                        const val = Math.min(item.goal, Math.max(item.progress, updates[item.id]));
+                        if (val > item.progress) { item.progress = val;
+                            changed = true; }
+                    }
+                });
+                if (changed) { saveDaily(daily);
+                    renderChallenges(); }
+            }
+
+            // ─── render helpers ────────────────────────────────────────
+            function renderAchievements() {
+                const list = document.getElementById('achievementList');
+                if (!list) return;
+                let html = '';
+                ACHIEVEMENTS.forEach(a => {
+                    const done = !!unlocked[a.id];
+                    html += `
+                <div class="card" style="border-color:${done ? '#46ff46' : '#333'};">
+                  <b>${done ? a.icon : '🔒'} ${a.name}</b>
+                  <br><small>${a.desc}</small>
+                </div>`;
+                });
+                // secrets
+                html += `<div class="card" style="border-color:#444;opacity:0.8;">
+              <b>${secrets.ghost ? '👻' : '❓'} Ghost Runner</b>
+              <br><small>${secrets.ghost ? 'Unlocked' : '???'}</small>
+            </div>`;
+                html += `<div class="card" style="border-color:#444;opacity:0.8;">
+              <b>${secrets.legend ? '🔥' : '❓'} REDOUT Legend</b>
+              <br><small>${secrets.legend ? 'Unlocked' : '???'}</small>
+            </div>`;
+                list.innerHTML = html;
+            }
+
+            function renderChallenges() {
+                const list = document.getElementById('challengeList');
+                if (!list) return;
+                let html = '';
+                daily.items.forEach(item => {
+                    const pct = Math.min(100, (item.progress / item.goal) * 100);
+                    const done = item.progress >= item.goal;
+                    html += `
+                <div class="card">
+                  <div>${done ? '✅' : '📌'} ${item.label}</div>
+                  <div class="bar"><div class="fill" style="width:${pct}%"></div></div>
+                  <small>${Math.floor(item.progress)} / ${item.goal}</small>
+                </div>`;
+                });
+                list.innerHTML = html;
+            }
+
+            function renderShop() {
+                const list = document.getElementById('shopList');
+                if (!list) return;
+                const colors = [
+                    { name: 'White', key: 'white', cost: 0 },
+                    { name: 'Purple', key: 'purple', cost: 50 },
+                    { name: 'Gold', key: 'gold', cost: 100 },
+                    { name: 'Cyan', key: 'cyan', cost: 150 },
+                    { name: 'Pink', key: 'pink', cost: 200 },
+                    { name: 'Orange', key: 'orange', cost: 250 },
+                    { name: 'Rainbow', key: 'rainbow', cost: 400 },
+                ];
+                const current = STORAGE.trailColor;
+                list.innerHTML = '';
+                colors.forEach(c => {
+                    const owned = c.cost === 0 || STORAGE.coins >= c.cost;
+                    const active = current === c.key;
+                    list.innerHTML += `
+                <div class="card" style="border-color:${active ? '#ff233d' : 'rgba(255,255,255,0.08)'};">
+                  <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <span><span style="color:${c.key};font-weight:700;">●</span> ${c.name}</span>
+                    <span>
+                      ${c.cost === 0 ? 'FREE' : c.cost + '🪙'}
+                      ${active ? ' ✓' : ''}
+                    </span>
+                  </div>
+                  <button class="small" style="margin:6px 0 0 0;min-width:auto;padding:6px 16px;"
+                    ${owned ? '' : 'disabled'}
+                    onclick="buyTrail('${c.key}',${c.cost})">
+                    ${owned ? (active ? 'Equipped' : 'Equip') : 'Need ' + c.cost + ' coins'}
+                  </button>
+                </div>`;
+                });
+                // show coins
+                const footer = document.createElement('div');
+                footer.style.cssText = 'margin-top:8px;opacity:0.5;font-size:0.9rem;';
+                footer.textContent = `🪙 ${STORAGE.coins} coins`;
+                list.appendChild(footer);
+            }
+
+            function renderMenuStats() {
+                const best = STORAGE.best;
+                const games = STORAGE.games;
+                const coins = STORAGE.coins;
+                const achCount = Object.values(unlocked).filter(Boolean).length;
+                menuStats.innerHTML =
+                    `⏱️ Best: ${best.toFixed(2)}s &nbsp;|&nbsp; 🎮 ${games} &nbsp;|&nbsp; 🪙 ${coins} &nbsp;|&nbsp; 🏆 ${achCount}/${ACHIEVEMENTS.length}`;
+            }
+
+            function updateMotivate() {
+                const msgs = [
+                    'One pixel can end everything.',
+                    'Stay focused.',
+                    'Precision wins.',
+                    'Can you beat your best?',
+                    'Red is death.',
+                    'Turn wisely.',
+                    'Speed kills.',
+                    'Survive.',
+                    'Every second counts.',
+                    'Keep turning.'
+                ];
+                motivate.textContent = msgs[Math.floor(Math.random() * msgs.length)];
+            }
+            setInterval(updateMotivate, 4500);
+
+            // ─── UI helpers ────────────────────────────────────────────
+            function showPanel(el) { el.classList.remove('hidden'); }
+
+            function hidePanel(el) { el.classList.add('hidden'); }
+
+            function hideAllPanels() {
+                [menu, hud, gameover, settingsPanel, shop, achPanel, challenges].forEach(hidePanel);
+            }
+
+            function home() {
+                running = false;
+                hideAllPanels();
+                showPanel(menu);
+                renderMenuStats();
+                if (frameId) { cancelAnimationFrame(frameId);
+                    frameId = null; }
+            }
+
+            // ─── game over ─────────────────────────────────────────────
+            function gameOver() {
+                if (!running) return;
+                running = false;
+                const runTime = (performance.now() - gameStartTime) / 1000;
+                const prevBest = STORAGE.best;
+
+                // update stats
+                STORAGE.deaths = STORAGE.deaths + 1;
+                STORAGE.totalTime = STORAGE.totalTime + runTime;
+                if (runTime > prevBest) STORAGE.best = runTime;
+                // streak
+                if (runTime >= 30) {
+                    STORAGE.streak = STORAGE.streak + 1;
+                    if (STORAGE.streak > STORAGE.bestStreak) STORAGE.bestStreak = STORAGE.streak;
+                } else {
+                    STORAGE.streak = 0;
+                }
+
+                // coins
+                const earned = Math.floor(runTime * 0.8) + 1;
+                STORAGE.coins = STORAGE.coins + earned;
+
+                // daily progress
+                const dailyUpdates = {
+                    d1: 1,
+                    d2: Math.floor(runTime),
+                    d3: 0,
+                    d4: Math.floor(runTime)
+                };
+                updateDailyProgress(dailyUpdates);
+
+                // achievements
+                checkAchievements();
+
+                // show game over
+                scoreEl.textContent = `⏱️ ${runTime.toFixed(2)}s  +${earned}🪙`;
+                bestEl.textContent = `🏆 Best: ${STORAGE.best.toFixed(2)}s  🔥 Streak: ${STORAGE.streak}`;
+                hidePanel(hud);
+                showPanel(gameover);
+                beep(180, 0.25, 'sawtooth');
+                vibrate(120);
+                renderMenuStats();
+                if (frameId) { cancelAnimationFrame(frameId);
+                    frameId = null; }
+            }
+
+            // ─── start game ────────────────────────────────────────────
+            function startGame() {
+                if (running) return;
+                hideAllPanels();
+                showPanel(hud);
+                resetGameState();
+                running = true;
+                gameStartTime = performance.now();
+                STORAGE.games = STORAGE.games + 1;
+
+                // daily: play game
+                updateDailyProgress({ d1: 1 });
+
+                // clear old frame
+                if (frameId) { cancelAnimationFrame(frameId);
+                    frameId = null; }
+                beep(700, 0.06);
+                vibrate(10);
+                renderMenuStats();
+                loop();
+            }
+
+            // ─── turn (pointer down) ──────────────────────────────────
+            function handleTurn(e) {
+                if (!running) return;
+                const oldDx = player.dx;
+                player.dx = -player.dy;
+                player.dy = oldDx;
+                STORAGE.turns = STORAGE.turns + 1;
+                // daily: turns
+                updateDailyProgress({ d3: 1 });
+                spawnParticles(player.x, player.y, 6);
+                beep(650, 0.03);
+                vibrate(6);
+            }
+
+            document.addEventListener('pointerdown', handleTurn);
+
+            // ─── obstacle spawner ─────────────────────────────────────
+            let spawnTimer = 0;
+
+            function spawnObstacle() {
+                if (!running) return;
+                const size = 6 + Math.random() * 14;
+                obstacles.push({
+                    x: Math.random() * W,
+                    y: Math.random() * H,
+                    s: size,
+                    vx: (Math.random() - 0.5) * 1.2,
+                    vy: (Math.random() - 0.5) * 1.2
+                });
+            }
+
+            setInterval(spawnObstacle, OBSTACLE_SPAWN_INTERVAL);
+
+            // ─── main loop ─────────────────────────────────────────────
+            function loop() {
+                if (!running) {
+                    frameId = null;
+                    return;
+                }
+                frameId = requestAnimationFrame(loop);
+                const now = performance.now();
+                const elapsed = (now - gameStartTime) / 1000;
+
+                // HUD
+                timeEl.textContent = elapsed.toFixed(2);
+
+                // speed scales with time
+                player.speed = 4 + elapsed * 0.08;
+
+                // move player
+                player.x += player.dx * player.speed;
+                player.y += player.dy * player.speed;
+                if (player.x < -PLAYER_SIZE) player.x = W + PLAYER_SIZE;
+                if (player.x > W + PLAYER_SIZE) player.x = -PLAYER_SIZE;
+                if (player.y < -PLAYER_SIZE) player.y = H + PLAYER_SIZE;
+                if (player.y > H + PLAYER_SIZE) player.y = -PLAYER_SIZE;
+
+                // trail
+                trail.push({ x: player.x, y: player.y, life: 28 });
+                if (trail.length > 120) trail.shift();
+
+                // move obstacles
+                for (const o of obstacles) {
+                    o.x += o.vx;
+                    o.y += o.vy;
+                    if (o.x < -20) o.x = W + 20;
+                    if (o.x > W + 20) o.x = -20;
+                    if (o.y < -20) o.y = H + 20;
+                    if (o.y > H + 20) o.y = -20;
+                    // collision
+                    const dx = player.x - o.x;
+                    const dy = player.y - o.y;
+                    if (Math.abs(dx) < PLAYER_SIZE + o.s && Math.abs(dy) < PLAYER_SIZE + o.s) {
+                        spawnParticles(player.x, player.y, 40);
+                        gameOver();
+                        return;
+                    }
+                }
+
+                // ── draw ──
+                ctx.clearRect(0, 0, W, H);
+
+                // bg gradient
+                const grad = ctx.createLinearGradient(0, 0, 0, H);
+                grad.addColorStop(0, '#050505');
+                grad.addColorStop(1, '#141414');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, W, H);
+
+                // ambient glow
+                const glow = ctx.createRadialGradient(W / 2, H * 0.2, 10, W / 2, H * 0.2, H * 0.7);
+                glow.addColorStop(0, 'rgba(255,40,60,0.06)');
+                glow.addColorStop(1, 'rgba(255,40,60,0)');
+                ctx.fillStyle = glow;
+                ctx.fillRect(0, 0, W, H);
+
+                // trail
+                const trailColor = STORAGE.trailColor;
+                for (const p of trail) {
+                    const alpha = p.life / 28;
+                    let color = '255,255,255';
+                    if (trailColor === 'purple') color = '180,80,255';
+                    else if (trailColor === 'gold') color = '255,215,0';
+                    else if (trailColor === 'cyan') color = '0,255,255';
+                    else if (trailColor === 'pink') color = '255,100,200';
+                    else if (trailColor === 'orange') color = '255,140,0';
+                    else if (trailColor === 'rainbow') {
+                        const hue = (p.x + p.y) % 360;
+                        ctx.fillStyle = `hsla(${hue},100%,60%,${alpha*0.8})`;
+                        ctx.fillRect(p.x - 1, p.y - 1, 3, 3);
+                        continue;
+                    }
+                    ctx.fillStyle = `rgba(${color},${alpha*0.7})`;
+                    ctx.fillRect(p.x - 1, p.y - 1, 3, 3);
+                    p.life--;
+                }
+                trail = trail.filter(p => p.life > 0);
+
+                // particles
+                for (const p of particles) {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.life--;
+                    const alpha = p.life / 40;
+                    ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+                    ctx.fillRect(p.x - 1, p.y - 1, 2, 2);
+                }
+                particles = particles.filter(p => p.life > 0);
+
+                // obstacles
+                for (const o of obstacles) {
+                    ctx.shadowBlur = 24;
+                    ctx.shadowColor = '#ff233d';
+                    ctx.fillStyle = '#ff233d';
+                    ctx.fillRect(o.x - o.s / 2, o.y - o.s / 2, o.s, o.s);
+                }
+                ctx.shadowBlur = 0;
+
+                // player
+                ctx.shadowBlur = 30;
+                ctx.shadowColor = '#ffffff88';
+                ctx.fillStyle = '#fff';
+                ctx.fillRect(player.x - PLAYER_SIZE / 2, player.y - PLAYER_SIZE / 2, PLAYER_SIZE, PLAYER_SIZE);
+                ctx.shadowBlur = 0;
+
+                // small crosshair
+                ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(player.x, player.y, 26, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // ─── exposed globals ──────────────────────────────────────
+            window.startGame = startGame;
+            window.home = home;
+
+            window.openSettingsPanel = function() {
+                hideAllPanels();
+                showPanel(settingsPanel);
+                beep(500, 0.04);
+            };
+            window.closeSettingsPanel = function() {
+                hidePanel(settingsPanel);
+                showPanel(menu);
+                renderMenuStats();
+                beep(400, 0.04);
+            };
+            window.toggleSoundSetting = function() {
+                setSound(!soundEnabled);
+                beep(600, 0.05);
+            };
+            window.toggleVibeSetting = function() {
+                setVibe(!vibeEnabled);
+                vibrate(30);
+            };
+            window.resetBestScore = function() {
+                if (confirm('Reset best score and stats?')) {
+                    localStorage.removeItem('redout_best');
+                    localStorage.removeItem('redout_games');
+                    localStorage.removeItem('redout_deaths');
+                    localStorage.removeItem('redout_totalTime');
+                    localStorage.removeItem('redout_turns');
+                    localStorage.removeItem('redout_streak');
+                    localStorage.removeItem('redout_bestStreak');
+                    // reset stored values in memory
+                    Object.keys(STORAGE).forEach(k => {
+                        if (k === 'trailColor' || k === 'coins') return;
+                        localStorage.removeItem('redout_' + k);
+                    });
+                    renderMenuStats();
+                    showToast('♻ Reset', 'Stats cleared');
+                }
+            };
+
+            window.openShop = function() {
+                hideAllPanels();
+                showPanel(shop);
+                renderShop();
+                beep(500, 0.04);
+            };
+            window.closeShop = function() {
+                hidePanel(shop);
+                showPanel(menu);
+                renderMenuStats();
+                beep(400, 0.04);
+            };
+            window.buyTrail = function(key, cost) {
+                if (key === 'white') {
+                    STORAGE.trailColor = 'white';
+                    renderShop();
+                    showToast('⚪ Equipped', 'White trail');
+                    return;
+                }
+                if (STORAGE.coins < cost) {
+                    showToast('❌ Not enough coins', `Need ${cost} 🪙`);
+                    vibrate(40);
+                    return;
+                }
+                STORAGE.coins = STORAGE.coins - cost;
+                STORAGE.trailColor = key;
+                renderShop();
+                renderMenuStats();
+                showToast('✅ Equipped', `${key} trail`);
+                beep(880, 0.08);
+                vibrate(20);
+            };
+
+            window.openAchievements = function() {
+                hideAllPanels();
+                showPanel(achPanel);
+                renderAchievements();
+                beep(500, 0.04);
+            };
+            window.closeAchievements = function() {
+                hidePanel(achPanel);
+                showPanel(menu);
+                renderMenuStats();
+                beep(400, 0.04);
+            };
+
+            window.openChallenges = function() {
+                daily = loadDaily();
+                hideAllPanels();
+                showPanel(challenges);
+                renderChallenges();
+                beep(500, 0.04);
+            };
+            window.closeChallenges = function() {
+                hidePanel(challenges);
+                showPanel(menu);
+                renderMenuStats();
+                beep(400, 0.04);
+            };
+
+            // ─── menu buttons ──────────────────────────────────────────
+            function addMenuButton(label, onclick) {
+                const btn = document.createElement('button');
+                btn.textContent = label;
+                btn.onclick = onclick;
+                menu.insertBefore(btn, menu.querySelector('#menuStats'));
+            }
+
+            // add extra menu buttons
+            addMenuButton('🏆 ACHIEVEMENTS', window.openAchievements);
+            addMenuButton('📋 DAILY', window.openChallenges);
+            addMenuButton('🛒 SHOP', window.openShop);
+            addMenuButton('⚙ SETTINGS', window.openSettingsPanel);
+
+            // ─── init ──────────────────────────────────────────────────
+            resetGameState();
+            renderMenuStats();
+            updateMotivate();
+            checkAchievements();
+            renderChallenges();
+
+            // start with menu visible (but splash is on top)
+            hideAllPanels();
+            showPanel(menu);
+            // but menu will be hidden behind splash until splash fades
+            // splash is z-index 9999, menu is 10
+
+            // ambient background animation (subtle)
+            let bgFrame = 0;
+
+            function bgLoop() {
+                bgFrame++;
+                if (!document.hidden) {
+                    // very faint scan lines
+                    if (bgFrame % 3 === 0) {
+                        const g = ctx.createLinearGradient(0, 0, W, 0);
+                        g.addColorStop(0, 'rgba(255,35,61,0.003)');
+                        g.addColorStop(0.5, 'rgba(255,35,61,0.01)');
+                        g.addColorStop(1, 'rgba(255,35,61,0.003)');
+                        ctx.fillStyle = g;
+                        ctx.fillRect(0, Math.random() * H, W, 1);
+                    }
+                }
+                requestAnimationFrame(bgLoop);
+            }
+            // start bg loop after a short delay so it doesn't interfere
+            setTimeout(bgLoop, 200);
+
+            // handle resize during game
+            window.addEventListener('resize', () => {
+                resize();
+                if (running && player) {
+                    player.x = Math.min(W, Math.max(0, player.x));
+                    player.y = Math.min(H, Math.max(0, player.y));
+                }
+            });
+
+            console.log('🟥 REDOUT loaded – good luck!');
+        })();
+    </script>
+
+</body>
+</html>
